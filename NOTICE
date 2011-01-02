@@ -1,0 +1,20 @@
+Gaenetta, PHP framework
+Copyright 2010 Ales Najmann
+
+This software includes unmodified software bundles from companies and authors:
+
+Google, Inc. 
+
+* appengine-api-labs-1.4.0.jar  
+* appengine-api-1.0-sdk-1.4.0.jar
+* appengine-jsr107cache-1.4.0.jar
+* jsr107cache-1.1.jar
+
+Caucho Technology, Inc.
+
+* quercus.jar
+* resin-kernel.jar
+
+Paul Tucky
+
+* urlrewrite-3.2.0.jar
