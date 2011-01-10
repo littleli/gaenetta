@@ -6,6 +6,7 @@ import com.google.appengine.api.urlfetch.HTTPRequest;
 import com.google.appengine.api.urlfetch.HTTPMethod;
 import com.google.appengine.api.urlfetch.FetchOptions;
 import com.google.appengine.api.urlfetch.HTTPHeader;
+import java.util.logging.Logger;
 
 class ResponseResult {
   private $result;
@@ -44,6 +45,7 @@ class UrlFetch {
   }
 
   private static $httpMethodEnum = java_class("com.google.appengine.api.urlfetch.HTTPMethod");
+  private static $log = Logger::getLogger(__CLASS__);
 
   private static function fetch($url, $method, $options) {
     $fetchService = URLFetchServiceFactory::getURLFetchService();
@@ -74,7 +76,8 @@ class UrlFetch {
       case 'async':
         break;
       default:
-        die("Unknown fetch option: $key");
+        self::$log->severe("Unknown fetch option: $key");
+        return new ResponseResult(NULL); // we returned NULL as response
       }
     }
 

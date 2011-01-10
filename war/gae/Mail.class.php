@@ -1,10 +1,16 @@
 <?php
 import com.google.appengine.api.mail.MailServiceFactory;
 import com.google.appengine.api.mail.MailService;
+import java.util.logging.Logger;
 
 class Mail {
   
+  private static $messageClass = "com.google.appengine.api.mail.MailService\$Message";
+  private static $attachmentClass = "com.google.appengine.api.mail.MailService\$Attachment";
+  private static $log = Logger::getLogger(__CLASS__);
   private static $mailService = MailServiceFactory::getMailService();
+  private static $allowed_properties = array( "bcc" => 2, "cc" => 2, "htmlBody" => 1, "replyTo" => 1, 
+    "sender" => 1, "subject" => 1, "textBody" => 1, "to" => 2, "attachments" => 2 );
   private $message;
 
   protected function __construct($message) {
@@ -12,61 +18,59 @@ class Mail {
   }
 
   static function nu() {
-    $message = new Java("com.google.appengine.api.mail.MailService\$Message");
-    $mail = new Mail($message);
-    return $mail;
+    $message = new Java(self::$messageClass);
+    return new Mail($message);
   }
 
   static function with($sender, $to, $subject, $textBody) {
-    $message = new Java("com.google.appengine.api.mail.MailService\$Message", $sender, $to, $subject, $textBody);
-    $mail = new Mail($message);
-    return $mail;
+    $message = new Java(self::$messageClass, $sender, $to, $subject, $textBody);
+    return new Mail($message);
   }
 
-  /**
-   * on error it returns true or non-empty array
-   */
   static function withArray($arr = NULL) {
-    $message = new Java("com.google.appengine.api.mail.MailService\$Message");
-    $errors = array();
     if ($arr && is_array($arr)) {
+      $mail = self::nu();
       foreach ($arr as $key => $value) {
-        $method = "set" . ucfirst($key);
-        if (method_exists($message, $method)) {
-          $message->$method($value);
-        } else {
-          $errors[$key] = $value;
-        }
+        $mail->$key = $value;
       }
-      if (!$errors) {
-        return new Mail($message);
-      }
-    } else {
       return true;
+    } else {
+      self::$log->severe("Argument type is not array");
+      return false;
     }
-    return $errors;
   }
 
   static function newAttachment($filename, $bytes) {
-    return new Java("com.google.appengine.api.mail.MailService\$Attachment", $filename, $bytes);
+    return new Java(self::$attachmentClass, $filename, $bytes);
   }
 
   function __set($name, $value) {
     $method = "set" . ucfirst($name);
-    if (method_exists($this->message, $method)) {
-      $this->message->$method($value);
-    } else {
-      exit("Property $name does not exist");
+    $allowed = self::$allowed_properties[$name];
+    switch ($allowed) {
+    case 1:
+      $this->message->$method("$value");
+      break;
+    case 2:       
+      if (is_array($value)) {
+        $this->message->$method($value);    
+      } else {
+        $this->message->$method(array("$value"));
+      }
+      break;
+    default:
+      self::$log->warning("Attempt to write value [$value] to non-existent property [$name]");
     }
   }
 
   function __get($name) {
-    $method = "get" . ucfirst($name);
-    if (method_exists($this->message, $method)) {
+    $allowed = $allowed_properties[$name];
+    if ($allowed) {
+      $method = "get" . ucfirst($name);
       return $this->message->$method();
-    } else {
-      return NULL;
     }
+    self::$log->warning("Attempt to read non-existent property [$name]");
+    return NULL;      
   }
 
   function __invoke() {
