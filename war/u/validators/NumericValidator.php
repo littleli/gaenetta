@@ -15,7 +15,6 @@ class NumericValidator extends Validator {
   public function validate($field, $value, $result) {
     if (is_numeric($value)) return true;
     if ($this->optional && empty($value)) return true;
-    var_dump($this->optional);
     $result->rejectValue($field, "Hodnota '$field' musí být číslo.", $value);
     return false;
   }

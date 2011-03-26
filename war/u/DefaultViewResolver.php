@@ -2,9 +2,11 @@
 
 class DefaultViewResolver extends ViewResolver {
 
+  private $params;
   private $model;
   
-  public function __construct(&$model) {
+  public function __construct(&$params, &$model) {
+    $this->params = $params;
     $this->model = $model;
   }
   
@@ -31,8 +33,10 @@ class DefaultViewResolver extends ViewResolver {
 	 foreach ($model as $field => $value) {
 	 	$$field = $value;
 	 }
-	 
+
+	 $params = $this->params;	 
 	 $tags = new Tags($params, $model);
+
 	 // and delegate to view template
 	 include $script;
   }

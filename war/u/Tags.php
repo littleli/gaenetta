@@ -76,15 +76,21 @@ final class Tags {
     return $html(false);
   }
   
-  public function checkboxField($attributes = array(), $binding) {
+  public function checkboxField($attributes, $binding) {
     $attributes['type'] = 'checkbox';
   	$this->markRejected($attributes, $binding);
+  	$field = $attributes['name'];
+  	$accepted = $binding->accepted;
+  	$target = $binding->target;
+  	if ($accepted && $target->$field) {
+  	  $attributes['checked'] = 'checked';
+  	}
   	$html = new Html;
     $html->input($attributes);
     return $html(false);
   }
   
-  public function radioField($attributes = array(), $binding) {
+  public function radioField($attributes, $binding) {
     $attributes['type'] = 'radio';
   	$this->markRejected($attributes, $binding);
     $html = new Html;
@@ -92,7 +98,7 @@ final class Tags {
     return $html(false);
   }
   
-  public function hiddenField($attributes = array(), $binding) {
+  public function hiddenField($attributes, $binding) {
     $attributes['type'] = 'hidden';
     $html = new Html;
     $html->input($attributes);
@@ -162,14 +168,14 @@ final class Tags {
   private function markRejected(&$attributes, &$binding) {
     if ($binding) {
   	  $fieldName = $attributes['name'];   
-  	  $rejected = $binding->getRejected();
+  	  $rejected = $binding->rejected;
   	  if ($rejected[$fieldName]) {
   	    // coloring
         $currentClass = $attributes['class'];
         if ($currentClass) {
           $currentClass .= " ${this->errorClass}";
         } else {
-         $currentClass = "${this->errorClass}";
+          $currentClass = "${this->errorClass}";
         }
         $attributes['class'] = $currentClass;
         // value

@@ -60,5 +60,5 @@ $controller = new $controllerClass;
 
 $viewModel = $controller->$actionName($params, $model);
 
-$viewResolver = new DefaultViewResolver($model);
+$viewResolver = new DefaultViewResolver($params, $model);
 $viewResolver->resolve( $viewModel );

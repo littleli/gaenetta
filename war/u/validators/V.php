@@ -25,4 +25,20 @@ final class V {
   static function date($format, $optional = false) { 
     return new DateValidator($format, $optional);
   }
+  
+  static function integerArray($optional = false) {
+    return new IntegerArrayValidator($optional);
+  }
+  
+  static function floatArray($optional = false) {
+    return new FloatArrayValidator($optional);
+  }
+  
+  static function stringArray($optional = false) {
+    return new StringArrayValidator($optional);
+  }
+  
+  static function boolean($trueValue = True, $optional = False) {
+    return new BooleanValidator($trueValue, $optional);
+  }
 }

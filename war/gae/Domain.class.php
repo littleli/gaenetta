@@ -35,6 +35,13 @@ class Domain {
   static function toGeoPt($latitude, $longitude) { return new GeoPt($latitude, $longitude); }
   static function toBlob($value) { return new Blob($value); }
   static function toShortBlob($value) { return new ShortBlob($value); }
+  static function toCollection($array) { 
+  	$list = new Java('java.util.ArrayList'); 
+  	foreach ($array as $item) { 
+  	  $list->add($item);
+  	}
+  	return $list;
+  }
 
   static function withKind(string $kind) {
     return new Domain(new Entity($kind)); 
