@@ -1,4 +1,4 @@
-<%
+<?php
 
 function strfirst($haystack, $needle) {
   return (strpos($haystack, $needle) === 0) ? true : false;
@@ -6,23 +6,23 @@ function strfirst($haystack, $needle) {
 
 class Html {
 
-  var $output = "";
+  private $output = '';
 
   function __call($name, $args) {
     $len = count($args);
-    $do = strfirst($name, "_");
-    $element = "";
-    $lo = "";
+    $do = strfirst($name, '_');
+    $element = '';
+    $lo = '';
 
-    if (strfirst($name, "open_")) {
-      return $this->opentag( substr($name, 5), $args);
-    } elseif (strfirst($name, "close_")) {
+    if (strfirst($name, 'open_')) {
+      return $this->opentag( substr($name, 5), array_shift($args));
+    } elseif (strfirst($name, 'close_')) {
       return $this->closetag( substr($name, 6));
-    } elseif (strfirst($name, "_open_")) {
-      return $this->_opentag( substr($name, 6), $args);
-    } elseif (strfirst($name, "_close_")) {
+    } elseif (strfirst($name, '_open_')) {
+      return $this->_opentag( substr($name, 6), array_shift($args));
+    } elseif (strfirst($name, '_close_')) {
       return $this->_closetag( substr($name, 7));
-    } elseif (strfirst($name, "_")) {
+    } elseif (strfirst($name, '_')) {
        $element = substr($name, 1); // return rest of the name after '_'
     } else {
        $element = $name;
@@ -33,12 +33,12 @@ class Html {
         $lo .= "<$element/>";
         break;
       case 1:
-        $arg = $args[0];
-        if (is_array($arg)) {
-	  $lo .= "<$element" . $this->build_attr($arg) . "/>";
+        $arg = array_shift($args);
+        if (is_array($arg)) { 
+          $lo .= "<$element" . $this->build_attr($arg) . "/>";
         } elseif (is_numeric($arg) || is_string($arg)) {
           $lo .= $this->_container($element, array(), array( $arg ));
-	}
+	    }
         break;
       case 2:
         $lo .= $this->_container($element, $args[1], array( $args[0] ));
@@ -110,17 +110,19 @@ class Html {
     return "<!DOCTYPE $doctype>\n";
   }
 
-  function __invoke() {
-    echo $this->output;
+  function __invoke($want_echo = true) {
+    if ($want_echo) {
+      echo $this->output;
+    } else {
+      return $this->output;
+    }
   }
 
   private function build_attr($attributes) {
-    $attrstr = "";
+    $attrstr = '';
     foreach ($attributes as $attribute => $value) {
        $attrstr .= " $attribute=\"$value\"";
     }
     return $attrstr;
   }
 }
-
-%>

@@ -16,4 +16,12 @@
 		<include path="/**.php" />
 	</resource-files>
 	
+	<!--
+    <env-variables>
+        <env-var name="DEFAULT_ENCODING" value="UTF-8" />
+    </env-variables>
+    -->
+    
+	<sessions-enabled>true</sessions-enabled>
+	
 </appengine-web-app>

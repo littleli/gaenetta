@@ -68,7 +68,9 @@ class Binder {
       } else {
         $convertedValue = $value; // defaults to string
       }
-	  $this->bindOnTarget($target, $field, $convertedValue);
+      if ($convertedValue !== NULL) {
+	    $this->bindOnTarget($target, $field, $convertedValue);
+	  }
     }
   }
 

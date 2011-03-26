@@ -1,4 +1,5 @@
 <?php
+import java.util.logging.Logger;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.DatastoreService;
@@ -14,9 +15,13 @@ import com.google.appengine.api.datastore.ShortBlob;
 import com.google.appengine.api.datastore.Blob;
 import com.google.appengine.api.datastore.GeoPt;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 
 class Domain {
-
+  
+  private static $log = Logger::getLogger(__CLASS__);
+  private static $ds = DatastoreServiceFactory::getDatastoreService();
+  private static $ads = DatastoreServiceFactory::getAsyncDatastoreService();
   private $entity;
 
   static function toEmail($value) { return new Email($value); }
@@ -38,6 +43,15 @@ class Domain {
   static function withKey(Key $key) {
     return new Domain(new Entity($key));
   }
+  
+  static function withKeyString($str) {
+    $key = self::stringToKey($str);
+    if (!$key) {
+      self::$log->warning("Key not found by string [$str]");
+      return null;
+    }
+    return self::withKey($key);
+  }
 
   static function withArray($params) {
     $kind = $params["kind"];
@@ -53,6 +67,21 @@ class Domain {
     } elseif ($parent) {
       return new Domain(new Entity($kind, $parent));
     }
+  }
+  
+  static function query($kind) {
+    return new Finder($kind);        
+  }
+  
+  static function stringToKey($str) {
+    return KeyFactory::stringToKey($str);
+  }
+  
+  static function stringToEntity($str, $async = false) {
+    if ($async) {
+      return self::$ads->get(self::stringToKey($str));
+    }
+    return self::$ds->get(self::stringToKey($str));
   }
 
   protected function __construct($entity) {
@@ -81,6 +110,25 @@ class Domain {
     foreach ($props as $prop => $val) {
       $this->entity->setUnindexedProperty($prop, $val);
     }
+  }
+  
+  function save($async = false) {
+    if ($async) {
+      return self::$ads->put($this->entity);
+    }
+    return self::$ds->put($this->entity);
+  }
+   
+  function delete($async = false) {
+    $keys[] = $this->get()->getKey();
+    if ($async) {
+      return self::$ads->delete($keys);
+    }
+    return self::$ds->delete($keys);
+  }
+  
+  function keyToString() {
+    return KeyFactory::keyToString($this->get()->getKey());
   }
 }
 

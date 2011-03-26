@@ -84,7 +84,7 @@ class UrlFetch {
     if ( $options["params"] ) {
       $encoded_params = http_build_query( $options["params"] );
       if ($method == "POST") {
-        $options["headers"]["Content-type"] = "application/x-www-form-urlencoded";
+        // $options["headers"]["Content-type"] = "application/x-www-form-urlencoded";
         $options["payload"] = $encoded_params; 
       } else {
         $url = "${url}?${encoded_params}";

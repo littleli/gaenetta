@@ -26,11 +26,13 @@ class DefaultViewResolver extends ViewResolver {
   }
   
   protected function renderView($script, &$model) {
+	 // include also some builders into the current scope
+	 //
 	 foreach ($model as $field => $value) {
 	 	$$field = $value;
 	 }
-	 // include also some builders into the current scope
-	 $html = new Html;
+	 
+	 $tags = new Tags($params, $model);
 	 // and delegate to view template
 	 include $script;
   }

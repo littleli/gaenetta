@@ -1,12 +1,27 @@
 <?php
 
+function autoload_classes($classname) {
+  $classdirs = array( "gae", "m", "c", "u", "s", "u/validators" );
+  foreach ($classdirs as $dir) {
+    if (file_exists("$dir/$classname.php")) {
+      require_once "$dir/$classname.php";
+      break;
+    } elseif (file_exists("$dir/$classname.class.php")) {
+      require_once "$dir/$classname.class.php";
+      break;
+    }
+  }
+}
+
+spl_autoload_register("autoload_classes");
+
 $method = $_SERVER["REQUEST_METHOD"];
 switch ($method) {
   case "GET":
     $params = $_GET;
     break;
   case "POST":
-    $params = $_POST + $_GET;
+    $params = $_POST;
     break;
   case "PUT":
     $params = array();
@@ -27,13 +42,23 @@ $model = array(
 ); // initial model, will be enriched later within user code
 if ($params["id"]) $model["id"] = $params["id"];
 
-$c = "c/${model['controller']}.php";
-if (file_exists($c)) {
-  include "$c";
-  $controllerClass = ucfirst($model["controller"]);
-  $actionName = $model["action"];
-  $controller = new $controllerClass;
-  $controller->$actionName($params, $model);
-} else {
-  printf("Fail");
-}
+$model["headers"] = array(
+  "HOST" => $_SERVER["HTTP_HOST"],
+  "CONNECTION" => $_SERVER["HTTP_CONNECTION"],
+  "USER_AGENT" => $_SERVER["HTTP_USER_AGENT"],
+  "ACCEPT" => $_SERVER["HTTP_ACCEPT"],
+  "ACCEPT_ENCODING" => $_SERVER["HTTP_ACCEPT_ENCODING"],
+  "ACCEPT_LANGUAGE" => $_SERVER["HTTP_ACCEPT_LANGUAGE"],
+  "ACCEPT_CHARSET" => $_SERVER["HTTP_ACCEPT_CHARSET"]
+);
+
+$model["session"] = &$_SESSION;
+
+$controllerClass = ucfirst($model["controller"]) . "Controller";
+$actionName = $model["action"];
+$controller = new $controllerClass;
+
+$viewModel = $controller->$actionName($params, $model);
+
+$viewResolver = new DefaultViewResolver($model);
+$viewResolver->resolve( $viewModel );

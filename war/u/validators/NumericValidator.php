@@ -14,7 +14,8 @@ class NumericValidator extends Validator {
 
   public function validate($field, $value, $result) {
     if (is_numeric($value)) return true;
-    if (empty($value) && $this->optional) return true;
+    if ($this->optional && empty($value)) return true;
+    var_dump($this->optional);
     $result->rejectValue($field, "Hodnota '$field' musí být číslo.", $value);
     return false;
   }
@@ -25,7 +26,7 @@ class NumericValidator extends Validator {
   
   public function convert($value) {
     if (is_numeric($value)) return $value + 0;
-	if (empty($value) && $this->optional) return NULL;
+	if ($this->optional && empty($value)) return NULL;
 	return $value;
   }
 }
