@@ -1,0 +1,24 @@
+1) Fetch gaenetta
+
+  $ git clone https://github.com/littleli/gaenetta
+
+2) Download google appengine from
+
+  http://code.google.com/appengine/downloads.html#Google_App_Engine_SDK_for_Java
+
+  to your gaenetta directory
+
+  $ cd gaenetta
+
+  $ wget http://googleappengine.googlecode.com/files/appengine-java-sdk-1.4.2.zip
+
+  $ unzip appengine-java-sdk-1.4.2.zip
+
+  $ mv appengine-java-sdk-1.4.2 appengine
+
+3) Start appengine
+
+  $ ./appengine/bin/dev_appserver.sh war/
+
+
+4) Point your browser to http://localhost:8080
