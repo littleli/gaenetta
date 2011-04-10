@@ -15,6 +15,8 @@ $html->container("ul", array("class" => "list"), array(
   $html->_li("dva")
 ));
 
+$html->input(array("type"=>"checkbox","name"=>"mujcheckbox","value"=>10,"checked"=>NULL));
+
 $html->close_body();
 $html->close_html();
 

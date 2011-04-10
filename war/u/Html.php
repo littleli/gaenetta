@@ -6,7 +6,13 @@ function strfirst($haystack, $needle) {
 
 class Html {
 
+  private static $log = java_class('java.util.logging.Logger')->getLogger(__CLASS__);
   private $output = '';
+  private $html5;
+
+  function __construct($html5 = true) {
+    $this->html5 = $html5;
+  }
 
   function __call($name, $args) {
     $len = count($args);
@@ -30,12 +36,21 @@ class Html {
 
     switch ($len) {
       case 0:
-        $lo .= "<$element/>";
+        if ($this->html5) {
+          $lo .= "<$element>";
+        } else {
+          $lo .= "<$element/>";
+        }
         break;
       case 1:
         $arg = array_shift($args);
-        if (is_array($arg)) { 
-          $lo .= "<$element" . $this->build_attr($arg) . "/>";
+        if (is_array($arg)) {
+          $lo .= "<$element" . $this->build_attr($arg);
+          if ($this->html5) {
+            $lo .= '>';
+          } else {
+            $lo .= '/>';
+          }
         } elseif (is_numeric($arg) || is_string($arg)) {
           $lo .= $this->_container($element, array(), array( $arg ));
 	    }
@@ -44,7 +59,7 @@ class Html {
         $lo .= $this->_container($element, $args[1], array( $args[0] ));
         break;
       default:
-        die(__METHOD__ . ": Invalid number of arguments [line:" . __LINE__ . "]");
+        self::$log->error("Invalid number of arguments [$len]");
     }
 
     // is element for direct output or for stringbuilder
@@ -121,7 +136,13 @@ class Html {
   private function build_attr($attributes) {
     $attrstr = '';
     foreach ($attributes as $attribute => $value) {
-       $attrstr .= " $attribute=\"$value\"";
+       if (isset($value)) {
+         $attrstr .= " $attribute=\"$value\"";
+       } elseif ($this->html5) {
+         $attrstr .= " $attribute";
+       } else {
+         $attrstr .= " $attribute=\"$attribute\"";
+       }
     }
     return $attrstr;
   }
