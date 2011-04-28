@@ -8,19 +8,19 @@ class Binder {
   private $target;
   private $params;
 
-  public function getRejected() {
+  function getRejected() {
     return $this->rejected;
   }
 
-  public function getAccepted() {
+  function getAccepted() {
     return $this->accepted;
   }
   
-  public function getTarget() {
+  function getTarget() {
     return $this->target;
   }
 
-  public function getParams() {
+  function getParams() {
     return $this->params;
   }
   
@@ -31,7 +31,8 @@ class Binder {
     $this->accepted = array();
   }
 
-  public static function bindData(&$target, $mapping, $params) {
+  static function bind(&$target, $mapping, $params) {
+    self::$log->info("Help me");
     $result = new Binder($target, $params);
     foreach ($mapping as $field => $validators) {
       $result->validateAndBind($field, $validators, $params[$field]);
@@ -39,11 +40,19 @@ class Binder {
     return $result;
   }
   
-  public function hasErrors() {
-  	return count( $this->getRejected() ) > 0;
+  static function isNewForm(&$binder) {
+    return $binder == NULL;
+  }
+  
+  static function isErrorForm(&$binder) {
+    return isset($binder) ? $binder->hasErrors() : false;
+  }
+    
+  function hasErrors() {
+  	return count( $this->rejected ) > 0;
   }
 
-  public function rejectValue($field, $notice, $rejectedValue) {
+  function rejectValue($field, $notice, $rejectedValue) {
     $this->rejected[$field]["notice"][] = $notice;
     if (isset($rejectedValue)) {
       $this->rejected[$field]["value"] = $rejectedValue;
@@ -90,13 +99,18 @@ class Binder {
     }
   }
   
-  public function markRejected(&$attributes) {
+  function markRejected(&$attributes) {
     if ($this->hasErrors()) {
       $name = $attributes['name'];
-      $attributes['value'] = $this->rejected[$name]['value'];
-      $class = $attributes['class'];
-      if ($class) {
-        $attributes['class'] = "$class error";
+      $rejectedField = $this->rejected[$name];
+      if ($rejectedField) {
+        $attributes['value'] = $rejectedField['value'];
+        $class = $attributes['class'];
+        if ($class) {
+          $attributes['class'] = "$class error";
+        } else {
+          $attributes['class'] = 'error';
+        }
       }
     }
     return $attributes;

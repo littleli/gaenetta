@@ -19,7 +19,7 @@ class DefaultViewResolver extends ViewResolver {
 	} elseif (is_int($control)) {
 	  $view = "$control";
 	  $controller = "errors";
-	} elseif ($control === NULL) { // DEFAULT
+	} else { // if ($control === NULL) { // DEFAULT
 	  $view = $this->model["action"];
 	  $controller = $this->model["controller"];
 	}	
@@ -28,16 +28,14 @@ class DefaultViewResolver extends ViewResolver {
   }
   
   protected function renderView($script, &$model) {
+     if (!$script) return;
 	 // include also some builders into the current scope
-	 //
 	 foreach ($model as $field => $value) {
 	 	$$field = $value;
 	 }
-
-	 $params = $this->params;	 
-	 $tags = new Tags($params, $model);
-
+	 $params = $this->params;
 	 // and delegate to view template
-	 include $script;
+	 include "scripts.php";
+	 include "$script";
   }
 }

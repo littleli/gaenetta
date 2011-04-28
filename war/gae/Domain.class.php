@@ -35,10 +35,10 @@ class Domain {
   static function toGeoPt($latitude, $longitude) { return new GeoPt($latitude, $longitude); }
   static function toBlob($value) { return new Blob($value); }
   static function toShortBlob($value) { return new ShortBlob($value); }
-  static function toCollection($array) { 
-  	$list = new Java('java.util.ArrayList'); 
+  static function toCollection(&$array, $type = 'java.util.HashSet') { 
+    $col = new Java($type, count($array));
   	foreach ($array as $item) { 
-  	  $list->add($item);
+  	  $col->add($item);
   	}
   	return $list;
   }
@@ -55,7 +55,7 @@ class Domain {
     $key = self::stringToKey($str);
     if (!$key) {
       self::$log->warning("Key not found by string [$str]");
-      return null;
+      return false;
     }
     return self::withKey($key);
   }
@@ -94,7 +94,7 @@ class Domain {
   protected function __construct($entity) {
     $this->entity = $entity;
   }
-
+  
   function get() {
     return $this->entity;
   }
@@ -104,16 +104,25 @@ class Domain {
   }
 
   function __set($name, $value) {
-    $this->entity->setProperty($name, $value);
+    if (is_array($value)) {
+      $count = count($value);
+      $set = new Java('java.util.HashSet', $count);
+      for ($i = 0; $i < $count; $i++) {
+        $set->add($value[$i]);        
+      }
+      $this->entity->setProperty($name, $set);
+    } else {
+      $this->entity->setProperty($name, $value);
+    }
   }
-
-  function setProperties($props) {
+  
+  function setProperties(&$props) {
     foreach ($props as $prop => $val) {
       $this->entity->setProperty($prop, $val);
     }
   }
 
-  function setUnindexedProperties($props) {
+  function setUnindexedProperties(&$props) {
     foreach ($props as $prop => $val) {
       $this->entity->setUnindexedProperty($prop, $val);
     }
@@ -134,8 +143,16 @@ class Domain {
     return self::$ds->delete($keys);
   }
   
+  function remove($prop) {
+    $this->entity->removeProperty($prop);
+  }
+  
   function keyToString() {
     return KeyFactory::keyToString($this->get()->getKey());
+  }
+  
+  function keyToInteger() {
+    return $this->get()->getKey()->getId();
   }
 }
 

@@ -3,36 +3,40 @@
 <head>
 <meta charset=utf-8>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<style>
-.error {
-  background-color: #fcc;
-}
-</style>
+<link rel="stylesheet" href="/static/validation.css"/>
 </head>
 <body>
-<div class="validations">
+
+<% if (Binder::isErrorForm($result)): %>
+<div class="errors">
 <% foreach ($result->rejected as $field): %>
   <% foreach ($field["notice"] as $notice): %>
     <div class="notice"><%= $notice %></div>
   <% endforeach %>
 <% endforeach %>
 </div>
-<%= $tags->form(array('action'=>'submit','name'=>'myform')) %>
-<%= $tags->textField(array('name'=>'name','value'=>$book->name, 'class'=>'nothing'), $result) %><label for="name">Name</label><br/>
-<%= $tags->textField(array('name'=>'pages','value'=>$book->pages), $result) %><label for="pages">Pages</label><br/>
-<%= $tags->textField(array('name'=>'isbn','value'=>$book->isbn), $result) %><label for="isbn">ISBN</label><br/>
-<%= $tags->checkboxField(array('name'=>'like', 'value'=>true), $result) %><label for="like">Like?</label><br/>
-<!-- %= $tags->checkboxGroup(array('name'=>'colors','values'=>array('red', 'yellow', 'blue')), $result) %><br/ -->
+<% endif %>
 
-<input type="checkbox" name="colors[]" value="Red" <%= in_array('Red', $params['colors']) ? 'checked' : '' %>><label for="red">Red</label><br/>
-<input type="checkbox" name="colors[]" value="Green" <%= in_array('Green', $params['colors']) ? 'checked' : '' %>><label for="blue">Green</label><br/>
-<input type="checkbox" name="colors[]" value="Blue" <%= in_array('Blue', $params['colors']) ? 'checked' : '' %>><label for="green">Blue</label><br/>
+<%= form($controller, 'submit', array('name'=>'myform') ) %>
 
+<%= textField($result, array('name'=>'name','class'=>'nothing')) %><label for="name">Name</label><br>
+<%= textField($result, array('name'=>'pages')) %><label for="pages">Pages</label><br>
+<%= textField($result, array('name'=>'isbn')) %><label for="isbn">ISBN</label><br>
+<%= checkbox($result, array('name'=>'like','value'=>'1')) %><label for="like">Like?</label><br>
 
-<input type="submit" value="Odeslat"/>
+<input type="checkbox" id="red" name="colors[]" value="Red" <%=checked('Red', $params['colors'])%>><label for="red">Red</label><br>
+<input type="checkbox" id="blue" name="colors[]" value="Green" <%=checked('Green', $params['colors'])%>><label for="blue">Green</label><br>
+<input type="checkbox" id="green" name="colors[]" value="Blue" <%=checked('Blue', $params['colors'])%>><label for="green">Blue</label><br>
 
-<pre>
+<input type="submit" value="Odeslat">
+
+<%= end_form() %>
+
+<pre style="background-color: #ccf; padding: 4px;">
 <% var_dump($result->target) %>
+</pre>
+<pre style="background-color: #cfc; padding: 4px;">
+<% var_dump($result->rejected) %>
 </pre>
 
 <!--
@@ -41,7 +45,6 @@
   <input name="isbn" value="<% if ($book->isbn): echo $book->isbn; else: echo $result->rejected["isbn"]["value"]; endif %>"/><label>ISBN</label><br/>
   <input type="submit" value="Odeslat"/>
 -->
-<%= $tags->endform() %>
 
 <h2><%= "čučorietky" %></h2>
 <ol>

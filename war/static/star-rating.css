@@ -1,0 +1,60 @@
+	/*             styles for the star rater                */	
+	.star-rating{
+		list-style:none;
+		margin: 0px;
+		padding:0px;
+		width: 125px;
+		height: 25px;
+		position: relative;
+		overflow:hidden;
+		background: url(star.gif) top left repeat-x;		
+	}
+	.star-rating li{
+		padding:0px;
+		margin:0px;
+		width:25px;
+		height:25px;
+		/*\*/
+		float: left;
+		/* */
+	}
+	.star-rating li span{
+		display:block;
+		width:25px;
+		height: 25px;
+		line-height:25px;		
+		text-decoration: none;
+		text-indent: -9000px;
+		z-index: 20;
+		position: absolute;
+		padding: 0px;
+		overflow:hidden;
+	}
+	.star-rating span.one-star{
+		left: 0px;
+	}
+	.star-rating span.two-stars{
+		left:25px;
+	}
+	.star-rating span.three-stars{
+		left: 50px;
+	}
+	.star-rating span.four-stars{
+		left: 75px;
+	}	
+	.star-rating span.five-stars{
+		left: 100px;
+	}
+	.star-rating li.current-rating{
+		background: url(star.gif) left center;
+		position: absolute;
+		height: 25px;
+		display: block;
+		text-indent: -9000px;
+		z-index: 1;
+	}
+	
+	/* remove halo effect in firefox   */
+	a:active{
+		outline: none;
+	}		

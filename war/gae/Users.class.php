@@ -25,15 +25,15 @@ class Users {
     }
   }
 
-  static function currentUser() {
+  static function getCurrentUser() {
     return self::$userService->getCurrentUser();
   }
 
-  static function isAdmin() {
+  static function isUserAdmin() {
     return self::$userService->isUserAdmin();
   }
 
-  static function isLoggedIn() {
+  static function isUserLoggedIn() {
     return self::$userService->isUserLoggedIn();
   }
 }

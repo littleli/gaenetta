@@ -24,7 +24,7 @@ abstract class ArrayValidator extends Validator {
   public function canConvert() { return true; }
   
   public function convert($array) {
-    $list = new Java('java.util.ArrayList');
+    $list = new Java('java.util.ArrayList', count($array));
     foreach ($array as $item) {
       $list->add($this->convertItem($item));
     }

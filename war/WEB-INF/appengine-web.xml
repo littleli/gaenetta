@@ -7,6 +7,12 @@
 	<system-properties>
 		<property name="java.util.logging.config.file" value="WEB-INF/logging.properties"/>
 	</system-properties>
+
+	<!--
+    <env-variables>
+        <env-var name="DEFAULT_ENCODING" value="UTF-8" />
+    </env-variables>
+    -->
 	
 	<!-- For PHP-Support -->
 	<static-files>
@@ -16,12 +22,12 @@
 		<include path="/**.php" />
 	</resource-files>
 	
-	<!--
-    <env-variables>
-        <env-var name="DEFAULT_ENCODING" value="UTF-8" />
-    </env-variables>
-    -->
-    
+    <inbound-services>
+        <service>mail</service>
+        <service>xmpp_message</service>
+        <service>xmpp_presence</service>
+        <service>xmpp_subscribe</service>
+    </inbound-services>
+      
 	<sessions-enabled>true</sessions-enabled>
-	
 </appengine-web-app>

@@ -5,7 +5,7 @@ import com.google.appengine.api.memcache.Expiration;
 class Memcache {
 
   private static $memcacheService = MemcacheServiceFactory::getMemcacheService();
-  private static $setPolicy = java_class("com.google.appengine.api.memcache.MemcacheService\$SetPolicy");
+  private static $setPolicy = java_class('com.google.appengine.api.memcache.MemcacheService$SetPolicy');
 
   protected function __construct() {
   }
